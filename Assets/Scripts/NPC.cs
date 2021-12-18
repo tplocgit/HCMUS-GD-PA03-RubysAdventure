@@ -31,6 +31,10 @@ public class NPC : MonoBehaviour
     public float introTextTimmer = 3f;
 
     bool isGivingMission = true;
+
+    [SerializeField] private GameObject buttonTalk;
+    [SerializeField] float distanceToTalk = 1;
+
     void Start()
     {
         dialogBox.SetActive(false);
@@ -40,6 +44,7 @@ public class NPC : MonoBehaviour
         missionText = GameObject.Find("MissionFixRobot").GetComponent<TextMeshProUGUI>();
         introCanvas = GameObject.Find("IntroCanvas");
         missionItem.SetActive(false);
+        buttonTalk.SetActive(false);
     }
     
     void Update()
@@ -62,6 +67,16 @@ public class NPC : MonoBehaviour
             if(introTextTimmer < 0) {
                 introCanvas.SetActive(false);
             }
+        }
+
+        RubyController rubyController = GameObject.Find("ruby").GetComponent<RubyController>();
+        if(rubyController.isLookingNPC())
+        {
+            this.buttonTalk.SetActive(true);
+        }
+        else
+        {
+            this.buttonTalk.SetActive(false);
         }
     }
 

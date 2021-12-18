@@ -6,13 +6,13 @@ public class Projectile : MonoBehaviour
 {
     Rigidbody2D rigidbody2d;
 
-    AudioSource audioSrc;
     public List<AudioClip> hitRobotClips;
+    RubyController rubyController;
 
     void Awake()
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
-        audioSrc = GetComponent<AudioSource>();
+        rubyController = GameObject.Find("ruby").GetComponent<RubyController>();
     }
 
     // Start is called before the first frame update
@@ -21,7 +21,7 @@ public class Projectile : MonoBehaviour
     }
 
     public void PlaySound(AudioClip clip) {
-        audioSrc.PlayOneShot(clip);
+        rubyController.PlaySound(clip);
     }
 
     // Update is called once per frame

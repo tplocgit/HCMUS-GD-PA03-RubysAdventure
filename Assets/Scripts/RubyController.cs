@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class RubyController  : MonoBehaviour
 {
@@ -39,7 +40,11 @@ public class RubyController  : MonoBehaviour
     bool isMoving = false;
 
     CogAmmoController ammoCtrl;
-    
+
+    [SerializeField] private PlayerInputActions inputActions;
+    Vector2 input = Vector2.zero;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -56,17 +61,19 @@ public class RubyController  : MonoBehaviour
 
         cdThrowCog = CDController.cogCdTime;
 
+        InitInputAction();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        horizontal = Input.GetAxis("Horizontal");
-        vertical = Input.GetAxis("Vertical");
+        // horizontal = Input.GetAxis("Horizontal");
+        // vertical = Input.GetAxis("Vertical");
 
         timeSinceLastLaunch += Time.deltaTime;
         
-        Vector2 move = new Vector2(horizontal, vertical);
+        Vector2 move = new Vector2(input.x, input.y);
         
         if(!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f))
         {
@@ -85,28 +92,43 @@ public class RubyController  : MonoBehaviour
                 isInvincible = false;
         }
 
-        if(Input.GetKeyDown(KeyCode.C))
-        {
-            ThrowCog();
-        }
+        // if (Input.GetKeyDown(KeyCode.X))
+        // {
+        //     RaycastHit2D hit = Physics2D.Raycast(rigidbody2d.position + Vector2.up * 0.2f, lookDirection, 1.5f, LayerMask.GetMask("NPC"));
+        //     if (hit.collider != null)
+        //     {
+        //         NPC character = hit.collider.GetComponent<NPC>();
+        //         if (character != null)
+        //         {
+        //             character.DisplayDialog();
+        //         }  
+        //     }
+        // }
 
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            RaycastHit2D hit = Physics2D.Raycast(rigidbody2d.position + Vector2.up * 0.2f, lookDirection, 1.5f, LayerMask.GetMask("NPC"));
-            if (hit.collider != null)
-            {
-                NPC character = hit.collider.GetComponent<NPC>();
-                if (character != null)
-                {
-                    character.DisplayDialog();
-                }  
-            }
-        }
+        // if(Input.GetKeyDown(KeyCode.C) || throwCogButton.Pressed)
+        // {
+        //     ThrowCog();
+        // }
 
         if(isMoving && !audioSrc.isPlaying)
             PlaySound(footStepClip);
+
+        if(Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            Debug.Log("Click");
+        }
     }
     
+    void InitInputAction()
+    {
+        inputActions = new PlayerInputActions();
+        inputActions.Player.Enable();
+        inputActions.Player.Movement.performed += OnMovement;
+        inputActions.Player.Movement.canceled += OnMovement;
+        inputActions.Player.ThrowCog.performed += OnThrowCog;
+        inputActions.Player.InteractNPC.performed += OnInteractNPC;
+    }
+
     public void PlaySound(AudioClip clip)
     {
         audioSrc.PlayOneShot(clip);
@@ -116,8 +138,7 @@ public class RubyController  : MonoBehaviour
     {
         Vector2 lastPosition = rigidbody2d.position;
         Vector2 movePosition = rigidbody2d.position;
-        movePosition.x = movePosition.x + speed * horizontal * Time.deltaTime;
-        movePosition.y = movePosition.y + speed * vertical * Time.deltaTime;
+        movePosition +=  speed * input * Time.deltaTime;
 
         isMoving = lastPosition != movePosition;
 
@@ -150,8 +171,9 @@ public class RubyController  : MonoBehaviour
         }
     }
 
-    void ThrowCog()
+    public void ThrowCog()
     {
+
         if(timeSinceLastLaunch < cdThrowCog) return;
 
         timeSinceLastLaunch = 0;
@@ -168,5 +190,55 @@ public class RubyController  : MonoBehaviour
         PlaySound(throwCogClip);
 
         cdCtrl.ThrowCogCdEffect();
+    }
+
+    public void OnMovement(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            input = context.ReadValue<Vector2>();
+        }
+        if(context.canceled)
+        {
+            input = Vector2.zero;
+        }
+    }
+
+    public void OnThrowCog(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            ThrowCog();
+        }
+    }
+
+    public bool isLookingNPC()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(rigidbody2d.position + Vector2.up * 0.3f, lookDirection, 1.5f, LayerMask.GetMask("NPC"));
+            if (hit.collider != null)
+            {
+                NPC character = hit.collider.GetComponent<NPC>();
+                if (character != null)
+                {
+                    return true;
+                }  
+                return false;
+            }
+            return false;
+    }
+    public void OnInteractNPC(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(rigidbody2d.position + Vector2.up * 0.3f, lookDirection, 1.5f, LayerMask.GetMask("NPC"));
+            if (hit.collider != null)
+            {
+                NPC character = hit.collider.GetComponent<NPC>();
+                if (character != null)
+                {
+                    character.DisplayDialog();
+                }  
+            }
+        }
     }
 }
