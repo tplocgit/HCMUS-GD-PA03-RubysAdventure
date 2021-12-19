@@ -31,4 +31,28 @@ public class SceneController : MonoBehaviour
     public void Quit() {
         Application.Quit();
     }
+
+    public void LoadGame()
+    {
+        LoadGameMenu loadGameMenu = this.gameObject.GetComponent<LoadGameMenu>();
+        if(loadGameMenu == null) {  Debug.Log("Can't find LoadMenu"); return; }
+        loadGameMenu.SetLoadData();
+        MainScene();
+    }
+
+    public void StartGame()
+    {
+        MyGameManager.Instance.isNewGame = true;
+        MainScene();
+    }
+
+    public void MainMenu()
+    {
+        ChangeScene("MenuScene");
+    }
+
+    public void LoadMenu()
+    {
+        ChangeScene("LoadGameScene");
+    }
 }

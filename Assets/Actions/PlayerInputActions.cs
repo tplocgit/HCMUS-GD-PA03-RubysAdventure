@@ -62,6 +62,42 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ResumeGame"",
+                    ""type"": ""Button"",
+                    ""id"": ""53165fe7-fd42-4a46-ac64-2c6b1f11503b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SaveGame"",
+                    ""type"": ""Button"",
+                    ""id"": ""1942109f-613a-4125-a967-5bb68277f022"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HomeTap"",
+                    ""type"": ""Button"",
+                    ""id"": ""f32e42fa-07ba-4061-ad06-e71c42362a26"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SaveGameJson"",
+                    ""type"": ""Button"",
+                    ""id"": ""ead95c13-53cf-4e67-a6f8-52adc693b4ab"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -262,6 +298,50 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""action"": ""PauseGame"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""987ecff8-9e54-486c-b9fc-9e58a23a7014"",
+                    ""path"": ""<Touchscreen>/touch3/tap"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResumeGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3dbc1ed7-c905-41c3-938d-17be2093dfac"",
+                    ""path"": ""<Touchscreen>/touch4/tap"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SaveGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d91c7747-16a5-4f32-a4bc-fd459735c23e"",
+                    ""path"": ""<Touchscreen>/touch5/tap"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HomeTap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""edde4faa-0c94-4033-9b6f-c0314b6e48d3"",
+                    ""path"": ""<Touchscreen>/touch6/tap"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SaveGameJson"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -274,6 +354,10 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_ThrowCog = m_Player.FindAction("ThrowCog", throwIfNotFound: true);
         m_Player_InteractNPC = m_Player.FindAction("InteractNPC", throwIfNotFound: true);
         m_Player_PauseGame = m_Player.FindAction("PauseGame", throwIfNotFound: true);
+        m_Player_ResumeGame = m_Player.FindAction("ResumeGame", throwIfNotFound: true);
+        m_Player_SaveGame = m_Player.FindAction("SaveGame", throwIfNotFound: true);
+        m_Player_HomeTap = m_Player.FindAction("HomeTap", throwIfNotFound: true);
+        m_Player_SaveGameJson = m_Player.FindAction("SaveGameJson", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -337,6 +421,10 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ThrowCog;
     private readonly InputAction m_Player_InteractNPC;
     private readonly InputAction m_Player_PauseGame;
+    private readonly InputAction m_Player_ResumeGame;
+    private readonly InputAction m_Player_SaveGame;
+    private readonly InputAction m_Player_HomeTap;
+    private readonly InputAction m_Player_SaveGameJson;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -345,6 +433,10 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @ThrowCog => m_Wrapper.m_Player_ThrowCog;
         public InputAction @InteractNPC => m_Wrapper.m_Player_InteractNPC;
         public InputAction @PauseGame => m_Wrapper.m_Player_PauseGame;
+        public InputAction @ResumeGame => m_Wrapper.m_Player_ResumeGame;
+        public InputAction @SaveGame => m_Wrapper.m_Player_SaveGame;
+        public InputAction @HomeTap => m_Wrapper.m_Player_HomeTap;
+        public InputAction @SaveGameJson => m_Wrapper.m_Player_SaveGameJson;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -366,6 +458,18 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @PauseGame.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseGame;
                 @PauseGame.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseGame;
                 @PauseGame.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseGame;
+                @ResumeGame.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnResumeGame;
+                @ResumeGame.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnResumeGame;
+                @ResumeGame.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnResumeGame;
+                @SaveGame.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSaveGame;
+                @SaveGame.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSaveGame;
+                @SaveGame.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSaveGame;
+                @HomeTap.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHomeTap;
+                @HomeTap.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHomeTap;
+                @HomeTap.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHomeTap;
+                @SaveGameJson.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSaveGameJson;
+                @SaveGameJson.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSaveGameJson;
+                @SaveGameJson.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSaveGameJson;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -382,6 +486,18 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @PauseGame.started += instance.OnPauseGame;
                 @PauseGame.performed += instance.OnPauseGame;
                 @PauseGame.canceled += instance.OnPauseGame;
+                @ResumeGame.started += instance.OnResumeGame;
+                @ResumeGame.performed += instance.OnResumeGame;
+                @ResumeGame.canceled += instance.OnResumeGame;
+                @SaveGame.started += instance.OnSaveGame;
+                @SaveGame.performed += instance.OnSaveGame;
+                @SaveGame.canceled += instance.OnSaveGame;
+                @HomeTap.started += instance.OnHomeTap;
+                @HomeTap.performed += instance.OnHomeTap;
+                @HomeTap.canceled += instance.OnHomeTap;
+                @SaveGameJson.started += instance.OnSaveGameJson;
+                @SaveGameJson.performed += instance.OnSaveGameJson;
+                @SaveGameJson.canceled += instance.OnSaveGameJson;
             }
         }
     }
@@ -392,5 +508,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnThrowCog(InputAction.CallbackContext context);
         void OnInteractNPC(InputAction.CallbackContext context);
         void OnPauseGame(InputAction.CallbackContext context);
+        void OnResumeGame(InputAction.CallbackContext context);
+        void OnSaveGame(InputAction.CallbackContext context);
+        void OnHomeTap(InputAction.CallbackContext context);
+        void OnSaveGameJson(InputAction.CallbackContext context);
     }
 }

@@ -18,11 +18,14 @@ public class UIHpBar : MonoBehaviour
     void Start()
     {
         originalSize = mask.rectTransform.rect.width;
+        RubyController ruby = GameObject.Find("ruby").GetComponent<RubyController>();
+        SetValue(ruby.Health / ruby.maxHealth);
     }
 
     public void SetValue(float value)
     {				      
         mask.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, originalSize * value);
+        Debug.Log($"{mask.rectTransform.rect.width}");
     }
     void Update()
     {

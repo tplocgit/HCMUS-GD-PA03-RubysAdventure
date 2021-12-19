@@ -10,7 +10,7 @@ public class RubyController  : MonoBehaviour
     public int maxHealth = 5;
     public float timeInvincible = 2.0f;
 
-    public int Health { get { return currentHealth; }}
+    public int Health { get { return currentHealth; } set { this.currentHealth = value; }}
     int currentHealth;
     
     bool isInvincible;
@@ -44,6 +44,10 @@ public class RubyController  : MonoBehaviour
     [SerializeField] private PlayerInputActions inputActions;
     Vector2 input = Vector2.zero;
 
+    [SerializeField] private GameObject pauseMenu;
+    public List<string> destroyed = new List<string>(); 
+    public List<Vector3> enemyPositions = new List<Vector3>();
+
 
     // Start is called before the first frame update
     void Start()
@@ -62,6 +66,16 @@ public class RubyController  : MonoBehaviour
         cdThrowCog = CDController.cogCdTime;
 
         InitInputAction();
+
+        if(!MyGameManager.Instance.isNewGame)
+        {
+            if(MyGameManager.Instance.saveType == 0)
+                MyGameManager.Instance.LoadGameRuby(this.gameObject);
+            else MyGameManager.Instance.LoadGameRubyJson(this.gameObject);
+            MyGameManager.Instance.isNewGame = true;
+        }
+        ammoCtrl.UpdateAmmo(0);
+        // ChangeHealth(0);
 
     }
 
@@ -92,31 +106,9 @@ public class RubyController  : MonoBehaviour
                 isInvincible = false;
         }
 
-        // if (Input.GetKeyDown(KeyCode.X))
-        // {
-        //     RaycastHit2D hit = Physics2D.Raycast(rigidbody2d.position + Vector2.up * 0.2f, lookDirection, 1.5f, LayerMask.GetMask("NPC"));
-        //     if (hit.collider != null)
-        //     {
-        //         NPC character = hit.collider.GetComponent<NPC>();
-        //         if (character != null)
-        //         {
-        //             character.DisplayDialog();
-        //         }  
-        //     }
-        // }
-
-        // if(Input.GetKeyDown(KeyCode.C) || throwCogButton.Pressed)
-        // {
-        //     ThrowCog();
-        // }
-
         if(isMoving && !audioSrc.isPlaying)
             PlaySound(footStepClip);
 
-        if(Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            Debug.Log("Click");
-        }
     }
     
     void InitInputAction()
@@ -127,6 +119,11 @@ public class RubyController  : MonoBehaviour
         inputActions.Player.Movement.canceled += OnMovement;
         inputActions.Player.ThrowCog.performed += OnThrowCog;
         inputActions.Player.InteractNPC.performed += OnInteractNPC;
+        inputActions.Player.PauseGame.performed += OnPauseGame;
+        inputActions.Player.ResumeGame.performed += OnResumeGame;
+        inputActions.Player.SaveGame.performed += OnSaveGame;
+        inputActions.Player.HomeTap.performed += OnHomeTap;
+        inputActions.Player.SaveGameJson.performed += OnSaveGameJson;
     }
 
     public void PlaySound(AudioClip clip)
@@ -239,6 +236,60 @@ public class RubyController  : MonoBehaviour
                     character.DisplayDialog();
                 }  
             }
+        }
+    }
+
+    public void OnPauseGame(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            MyGameManager.Instance.PauseGame();
+            pauseMenu.SetActive(true);
+        }
+    }
+
+    public void OnResumeGame(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            MyGameManager.Instance.ResumeGame();
+            pauseMenu.SetActive(false);
+        }
+    }
+
+    public void OnSaveGame(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            foreach(var e in GameObject.FindGameObjectsWithTag("clock"))
+            {
+                this.enemyPositions.Add(e.transform.position);
+            }
+            MyGameManager.Instance.SaveGame(this.gameObject, GameObject.Find("JambiIdle"));
+            MyGameManager.Instance.ResumeGame();
+            this.gameObject.GetComponent<SceneController>().MainMenu();
+        }
+    } 
+
+    public void OnSaveGameJson(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            foreach(var e in GameObject.FindGameObjectsWithTag("clock"))
+            {
+                this.enemyPositions.Add(e.transform.position);
+            }
+            MyGameManager.Instance.SaveGameJson(this.gameObject, GameObject.Find("JambiIdle"));
+            MyGameManager.Instance.ResumeGame();
+            this.gameObject.GetComponent<SceneController>().MainMenu();
+        }
+    } 
+    public void OnHomeTap(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {   
+            MyGameManager.Instance.ResumeGame();
+            this.gameObject.GetComponent<SceneController>().MainMenu();
         }
     }
 }

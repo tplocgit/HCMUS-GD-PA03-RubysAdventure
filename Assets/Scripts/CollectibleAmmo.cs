@@ -8,7 +8,17 @@ public class CollectibleAmmo : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        RubyController ruby = GameObject.Find("ruby").GetComponent<RubyController>();
+        if(ruby != null)
+        {
+            foreach(string name in ruby.destroyed)
+            {
+                if(this.gameObject.name == name)
+                {
+                    Destroy(this.gameObject);
+                }
+            }
+        }
     }
 
     // Update is called once per frame
@@ -25,8 +35,10 @@ public class CollectibleAmmo : MonoBehaviour
             if(controller.UpdateAmmo(1))
             {
                 RubyController rubyCtrl = other.GetComponent<RubyController>();
-                if(rubyCtrl != null)
+                if(rubyCtrl != null) {
                     rubyCtrl.PlaySound(collectedClip);
+                    rubyCtrl.destroyed.Add(this.gameObject.name);
+                }
                 Destroy(gameObject);
             }
         }

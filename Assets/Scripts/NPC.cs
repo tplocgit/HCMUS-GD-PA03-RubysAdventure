@@ -24,16 +24,15 @@ public class NPC : MonoBehaviour
         new Vector3(-5, -5, 0)
     };
 
-    bool missionAccepted = false;
+    public bool missionAccepted = false;
 
     GameObject introCanvas;
 
     public float introTextTimmer = 3f;
 
-    bool isGivingMission = true;
+    public bool isGivingMission = true;
 
     [SerializeField] private GameObject buttonTalk;
-    [SerializeField] float distanceToTalk = 1;
 
     void Start()
     {
@@ -45,6 +44,10 @@ public class NPC : MonoBehaviour
         introCanvas = GameObject.Find("IntroCanvas");
         missionItem.SetActive(false);
         buttonTalk.SetActive(false);
+        if(MyGameManager.Instance.isNewGame) return;
+        if(MyGameManager.Instance.saveType == 0)
+            MyGameManager.Instance.LoadGameNPC(this.gameObject);
+        else MyGameManager.Instance.LoadGameNPCJson(this.gameObject);
     }
     
     void Update()
@@ -87,7 +90,7 @@ public class NPC : MonoBehaviour
         }
     }
 
-    void CreateEnemy(List<Vector3> positions) {
+    public void CreateEnemy(List<Vector3> positions) {
         foreach(Vector3 pos in positions) {
             Instantiate(clockPrefab, pos, Quaternion.identity);
         }
@@ -125,5 +128,19 @@ public class NPC : MonoBehaviour
             dialogBox.SetActive(true);
             ChangeNPCDialogText("Thank you adventure!! You fixed all Mr.Clock.");
         }
+    }
+
+    public void LoadGame(float[,] pos, bool givingMission, bool isMissionAccepted)
+    {
+        this.isGivingMission = givingMission;
+        this.missionAccepted = isMissionAccepted;
+        this.enemyPositions = new List<Vector3>();
+        for(int i = 0; i< pos.Length; i++)
+        {
+            this.enemyPositions.Add(new Vector3(pos[i,0], pos[i,1], 0));
+        }
+        this.CreateEnemy(this.enemyPositions);
+        this.enemyCount = pos.Length;
+        updateEnemy(0);
     }
 }

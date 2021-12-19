@@ -12,11 +12,28 @@ public class CogAmmoController : MonoBehaviour
 
     int INIT_AMMO = 0;
 
+    public int Ammo
+    {
+        get { return this.currentAmmo; }
+        set { this.currentAmmo = value; }
+    }
+
     void Start()
     {
         cogAmmoCount = GameObject.Find("AmmoCount").GetComponent<TextMeshProUGUI>();
         cogAmmoCount.text = INIT_AMMO.ToString();
         currentAmmo = INIT_AMMO;
+        RubyController ruby = GameObject.Find("ruby").GetComponent<RubyController>();
+        if(ruby != null)
+        {
+            foreach(string name in ruby.destroyed)
+            {
+                if(this.gameObject.name == name)
+                {
+                    Destroy(this.gameObject);
+                }
+            }
+        }
     }
 
     // Update is called once per frame
